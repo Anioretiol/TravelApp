@@ -1,22 +1,25 @@
 const express = require("express");
-const mongoose = require("mongoose"); 
-const pinRoutes = require("./routes/pin");
 const app = express();
-const Port = process.env.PORT || 6001;
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const userRoute = require("./routes/user");
+const pinRoute = require("./routes/pin");
+
+dotenv.config();
 
 app.use(express.json());
-require("dotenv").config();
 
-//routes
-app.use("/api/v1",pinRoutes);
-
-
-mongoose
-    .connect(process.env.MONGO_URI,{
+mongoose 
+ .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-    })
-    .then(()=>{
-        app.listen(Port,()=> console.log("Server Started " ,Port));
-    })
+        useCreateIndex: true,   })   
+ .then(() => console.log("MongoDB connected!"))
+ .catch(err => console.log(err));
 
+app.use("/api/users", userRoute);
+app.use("/api/pins", pinRoute);
+
+app.listen(8800, () => {
+  console.log("Backend server is running!");
+});
